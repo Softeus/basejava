@@ -17,7 +17,7 @@ public class ArrayStorage {
     }
 
     public void save(Resume r) {
-        if (getPos(r.getUuid()) != -1) {
+        if (findIndex(r.getUuid()) != -1) {
             System.out.println("Запись не возможна: резюме UUID " + r.getUuid() + " уже есть в базе");
             return;
         }
@@ -29,28 +29,28 @@ public class ArrayStorage {
     }
 
     public void update(Resume r) {
-        int pos = getPos(r.getUuid());
-        if (pos != -1) {
-            storage[pos] = r;
+        int index = findIndex(r.getUuid());
+        if (index != -1) {
+            storage[index] = r;
             return;
         }
         System.out.println("Резюме с UUID: " + r.getUuid() + " не найдено");
     }
 
     public Resume get(String uuid) {
-        int pos = getPos(uuid);
-        if (pos != -1) {
-            return storage[pos];
+        int index = findIndex(uuid);
+        if (index != -1) {
+            return storage[index];
         }
         System.out.println("Резюме с UUID: " + uuid + " не найдено");
         return null;
     }
 
     public void delete(String uuid) {
-        int pos = getPos(uuid);
-        if (pos != -1) {
+        int index = findIndex(uuid);
+        if (index != -1) {
             numberOfResumes--;
-            System.arraycopy(storage, pos + 1, storage, pos, numberOfResumes - pos);
+            System.arraycopy(storage, index + 1, storage, index, numberOfResumes - index);
             storage[numberOfResumes] = null;
             return;
         }
@@ -68,7 +68,7 @@ public class ArrayStorage {
         return numberOfResumes;
     }
 
-    int getPos(String uuid) {
+    private int findIndex(String uuid) {
         for (int i = 0; i < numberOfResumes; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;
