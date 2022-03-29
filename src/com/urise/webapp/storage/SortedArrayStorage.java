@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
+import static java.lang.Math.abs;
 
 public class SortedArrayStorage extends AbstractArrayStorage{
     @Override
@@ -14,7 +15,7 @@ public class SortedArrayStorage extends AbstractArrayStorage{
     @Override
     public void update(Resume r) {
         int index = getIndex(r.getUuid());
-        if (index == -1) {
+        if (index < 0) {
             System.out.println("Resume " + r.getUuid() + " not exist");
         } else {
             storage[index] = r;
@@ -23,18 +24,23 @@ public class SortedArrayStorage extends AbstractArrayStorage{
 
     @Override
     public void save(Resume r) {
-        if (getIndex(r.getUuid()) >= 0) {
-            System.out.println("Resume " + r.getUuid() + " already exist");
-        } else {
+        int index = getIndex(r.getUuid());
+
+        if (abs(index) > size || size == 0) {
             storage[size] = r;
             size++;
+        } else {
+            System.arraycopy(storage, abs(index)-1, storage, abs(index), size);
+            storage[abs(index)-1] = r;
+            size++;
         }
-    }
-        else if (size >= STORAGE_LIMIT) {
+        if (size >= STORAGE_LIMIT) {
             System.out.println("Storage overflow");
         }
-
-
+        if (index >= 0) {
+            System.out.println("Resume " + r.getUuid() + " already exist");
+        }
+    }
 
     @Override
     public void delete(String uuid) {
