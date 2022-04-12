@@ -1,5 +1,7 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +22,7 @@ public class ListStorageTest {
     private static final Resume[] resumeEtalon = new Resume[]{resume1, resume2, resume3};
 
     public ListStorageTest() {
+        storage = new ListStorage();
     }
 
     @Before
@@ -36,26 +39,62 @@ public class ListStorageTest {
     }
 
     @Test
-    public void clear() {
+    public void clear() throws Exception {
+        storage.clear();
+        assertEquals(0, storage.size());
     }
 
     @Test
-    public void update() {
+    public void update() throws Exception {
+        Resume resumeToUpdate = new Resume(UUID_1);
+
+        storage.update(resumeToUpdate);
+        assertSame(resumeToUpdate, storage.get(UUID_1));
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void updateNotExist() throws Exception {
+        Resume resumeToUpdate = new Resume();
+        storage.update(resumeToUpdate);
     }
 
     @Test
-    public void getAll() {
+    public void getAll() throws Exception {
+        Resume[] result = storage.getAll();
+        assertArrayEquals(resumeEtalon, result);
     }
 
     @Test
-    public void save() {
+    public void save() throws Exception {
+        storage.save(resume4);
+        assertEquals(4, storage.size());
+        assertEquals(resume4, storage.get(UUID_4));
+    }
+
+    @Test(expected = ExistStorageException.class)
+    public void saveExist() throws Exception {
+        storage.save(resume1);
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void delete() throws Exception {
+        storage.delete(UUID_1);
+        assertEquals(2, storage.size());
+        storage.get(UUID_1);
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void deleteNotExist() throws Exception {
+        storage.delete("dummy");
     }
 
     @Test
-    public void delete() {
+    public void get() throws Exception {
+        assertEquals(resume1, storage.get(UUID_1));
     }
 
-    @Test
-    public void get() {
+    @Test(expected = NotExistStorageException.class)
+    public void getNotExist() throws Exception {
+        storage.get("dummy");
     }
 }
