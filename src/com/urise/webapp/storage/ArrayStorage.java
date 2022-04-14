@@ -26,4 +26,9 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
         return -1;
     }
+
+    @Override
+    public void updateElementAtIndex(Resume r, int index) {
+        storage[index] = r;
+    }
 }
