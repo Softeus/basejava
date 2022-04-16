@@ -1,11 +1,8 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.exception.ExistStorageException;
-import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,37 +27,28 @@ public class ListStorage extends AbstractStorage {
         return (Resume[]) resumes;
     }
 
-    public void save(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        }
-        storage.add(r);
-        Collections.sort(storage);
-    }
-
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        fillDeletedElement(index);
-    }
-
     @Override
-    protected Resume getElementByIndex(int index) {
-        return storage.get(index);
-    }
-
-    protected void fillDeletedElement(int index) {
+    protected void deleteResume(int index) {
         storage.remove(index);
     }
 
+    @Override
+    protected Resume getResume(int index) {
+        return storage.get(index);
+    }
+
+    @Override
     protected int getIndex(String uuid) {
         return storage.indexOf(new Resume(uuid));
     }
 
-    protected void updateElementAtIndex(Resume r, int index) {
+    @Override
+    protected void updateResume(Resume r, int index) {
         storage.set(index, r);
+    }
+
+    @Override
+    protected void insertResume(Resume r, int index) {
+        storage.add(r);
     }
 }
