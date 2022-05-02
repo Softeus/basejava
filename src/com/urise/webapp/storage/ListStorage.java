@@ -5,50 +5,56 @@ import com.urise.webapp.model.Resume;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ArrayList based storage for Resumes
- */
-public class ListStorage extends AbstractStorage {
-    private final List<Resume> storage = new ArrayList<>();
+public class ListStorage extends AbstractStorage<Integer> {
+    private final List<Resume> list = new ArrayList<>();
 
-    public int size() {
-        return storage.size();
+    @Override
+    protected Integer getSearchKey(String uuid) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return null;
     }
 
+    @Override
+    protected boolean isExist(Integer searchKey) {
+        return searchKey != null;
+    }
+
+    @Override
+    protected void doUpdate(Resume r, Integer searchKey) {
+        list.set(searchKey, r);
+    }
+
+    @Override
+    protected void doSave(Resume r, Integer searchKey) {
+        list.add(r);
+    }
+
+    @Override
+    protected Resume doGet(Integer searchKey) {
+        return list.get(searchKey);
+    }
+
+    @Override
+    protected void doDelete(Integer searchKey) {
+        list.remove(searchKey.intValue());
+    }
+
+    @Override
     public void clear() {
-        storage.clear();
-    }
-
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    public Resume[] getAll() {
-        Object[] resumes = storage.toArray(new Resume[0]);
-        return (Resume[]) resumes;
+        list.clear();
     }
 
     @Override
-    protected void deleteResume(int index) {
-        storage.remove(index);
+    public int size() {
+        return list.size();
     }
 
     @Override
-    protected Resume getResume(int index) {
-        return storage.get(index);
-    }
-
-    @Override
-    protected int getIndex(String uuid) {
-        return storage.indexOf(new Resume(uuid));
-    }
-
-    @Override
-    protected void updateResume(Resume r, int index) {
-        storage.set(index, r);
-    }
-
-    @Override
-    protected void insertResume(Resume r, int index) {
-        storage.add(r);
+    public List<Resume> doCopyAll() {
+        return new ArrayList<>(list);
     }
 }
